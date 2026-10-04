@@ -90,7 +90,7 @@ python run.py --source ws                # follow a running speech server
 
 With the offline model, audio stays on your computer. With a cloud model,
 audio goes directly to that provider under your own account and its terms.
-Dotify has no server of its own and collects no telemetry.
+Dotify does not have a server of its own and does not collect telemetry.
 See [SECURITY.md](SECURITY.md).
 
 ## Contributing

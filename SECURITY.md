@@ -12,7 +12,8 @@
 - **Summaries ("what did I miss?"):** with an `OPENAI_API_KEY` set, the
   missed text is sent to OpenAI to be summarized. Without one, a local
   extractive summary is used and nothing is sent.
-- Dotify has no server of its own, no accounts, and no telemetry.
+- Dotify does not have a server of its own, does not use accounts, and does
+  not collect telemetry.
 
 ## What stays on disk
 
