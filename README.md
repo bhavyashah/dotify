@@ -1,9 +1,8 @@
 # Dotify: live speech on a braille display
 
 Dotify is built for deafblind people who read braille. It transcribes speech
-in the room and shows the words on a refreshable braille display a second
-or two later, in contracted (grade 2) or uncontracted (grade 1) UEB braille.
-The reader sets the pace and uses the display's own keys to slow down,
+in the room and streams the words to a refreshable braille display. The
+reader sets the pace and uses the display's own keys to slow down,
 pause, pan back, jump to the most recent speech, or get a short summary of
 what they missed.
 
