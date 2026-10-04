@@ -103,10 +103,8 @@ covers what we learned building Dotify.
 
 ## Acknowledgements
 
-Thank you to Ania Filochowska, David Madey,
-Haben Girma, Maurice Mines, Christopher Kchao,
-Scott Davert, Mark Baxter, and Robert Stigile for their
-invaluable feedback.
+Thank you to David Madey, Haben Girma, Maurice Mines, Christopher Kchao,
+Scott Davert, Mark Baxter, and Robert Stigile for their invaluable feedback.
 
 ## License
 
