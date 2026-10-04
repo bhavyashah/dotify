@@ -58,8 +58,14 @@ toward that.
    "Windows protected your PC": choose **More info**, then **Run anyway**.
 2. Plug in your braille display over USB, or pair it in **Settings ›
    Bluetooth & devices** and turn on the display's Bluetooth terminal mode.
-3. Launch **Start Dotify** from the Start menu. The Dotify window opens.
-4. On first use, download the offline speech model, NVIDIA Nemotron: open
+3. Turn off your screen reader's braille so Dotify can use the display. Your
+   screen reader keeps speaking. In NVDA, set the braille display to **No
+   braille** (NVDA menu › Preferences › Settings › Braille). In JAWS, set the
+   braille display to **No Display** in Settings Center. In Narrator, turn
+   off braille. When you finish with Dotify, turn your screen reader's
+   braille back on.
+4. Launch **Start Dotify** from the Start menu. The Dotify window opens.
+5. On first use, download the offline speech model, NVIDIA Nemotron: open
    **Settings › Transcription › Offline model** and choose **Download**. It
    is about 650 MB and downloads once. After that, Dotify transcribes speech
    on your computer with no API key or internet connection.

@@ -93,11 +93,19 @@ program write to its cells:
 | **BrailleNote Touch / Touch Plus** | Open **Braille Terminal** and choose USB |
 | **Brailliant BI 20X / 40X** | Choose the USB terminal connection |
 
-**Close any other program that uses the display,** such as NVDA, JAWS, or
-another braille app. Dotify needs the display to itself. If a screen reader
-is still using the display when Dotify starts, Dotify tells you how to free
-it and connects as soon as it can. In NVDA, set the braille display to
-**No braille**. You keep NVDA's speech.
+**Turn off your screen reader's braille.** Dotify needs the display to
+itself. Your screen reader keeps speaking.
+
+| Screen reader | How to turn off its braille |
+|---|---|
+| **NVDA** | NVDA menu › Preferences › Settings › Braille: set the braille display to **No braille** |
+| **JAWS** | Settings Center: set the braille display to **No Display** |
+| **Narrator** | Turn off braille in Narrator settings |
+
+Close any other braille app as well. If a screen reader is still using the
+display when Dotify starts, Dotify tells you how to free it and connects as
+soon as the display is free. When you finish with Dotify, turn your screen
+reader's braille back on.
 
 **Bluetooth.** Pair the display in **Windows Settings › Bluetooth & devices**,
 then choose its Bluetooth terminal connection on the display (on HumanWare
