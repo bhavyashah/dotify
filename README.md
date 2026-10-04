@@ -15,6 +15,32 @@ standard. On Linux, Dotify supports every display BRLTTY supports.
 
 Known issues are listed in [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 
+## What Dotify adds to live captions
+
+Phones offer live captions, such as Live Captions on iPhone and Live
+Transcribe on Android. Dotify adds features built for reading live speech
+in braille:
+
+- **Your reading pace.** Incoming speech queues up, and the display
+  advances at the speed you set. You can pause, pan back, and change the
+  speed from the display's keys.
+- **Steady cells.** Text stays the same once it reaches the display.
+  Corrections from the speech model apply only to words you haven't read
+  yet.
+- **Backlog gauge.** The first cell shows how many unread words are
+  waiting.
+- **Catching up.** One key jumps to the most recent speech. Another
+  replaces the backlog with a short summary of what was said.
+- **Three reading modes.** Pages that advance on a timer, pages you advance
+  with a panning key, or a ticker tape that moves one cell at a time.
+- **Grade 1 or grade 2 UEB,** switchable mid-conversation.
+- **Typed input and replies.** A hearing partner can type straight to the
+  display, and you can type a reply on the display's keys for Dotify to
+  speak aloud.
+- **Personal dictionary** for names and words the speech model mishears.
+- **Choice of speech models,** including NVIDIA Nemotron, which runs
+  offline on your Windows computer.
+
 ## Try it on Windows
 
 1. Download **`DotifySetup.exe`** from the
@@ -57,27 +83,6 @@ python run.py --file sample.txt          # replay a file
 python run.py --source ws                # follow a running speech server
 ```
 
-## How it fits together
-
-```
-microphone ─► speech server ─► /finalized WebSocket ─► braille engine ─► display
- (browser)    core/speech-to-text   (text segments)     core/text-to-braille   (HID / serial /
-                                                                              Bluetooth / BrlAPI)
-```
-
-- [`core/speech-to-text/`](core/speech-to-text/): a Node.js server that
-  sends microphone audio to a speech recognition model and passes on the
-  finished text.
-- [`core/text-to-braille/`](core/text-to-braille/): a Python program that
-  translates the text with liblouis and paces the cells across the display.
-- [`Windows/`](Windows/) and [`Linux/`](Linux/): platform launchers, display
-  drivers, and the Windows installer.
-
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes each part in more
-detail. [docs/LESSONS.md](docs/LESSONS.md) covers what we learned building
-Dotify: braille hardware on Windows, pacing text for touch reading, and
-choosing a streaming speech model.
-
 ## Privacy
 
 With the offline model, audio stays on your computer. With a cloud model,
@@ -89,7 +94,16 @@ See [SECURITY.md](SECURITY.md).
 
 Issues, pull requests, and forks are welcome.
 [CONTRIBUTING.md](CONTRIBUTING.md) explains how to build and test, and the
-rules the code follows.
+rules the code follows. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+describes how the parts fit together, and [docs/LESSONS.md](docs/LESSONS.md)
+covers what we learned building Dotify.
+
+## Acknowledgements
+
+Thank you to Ania Filochowska, David Madey,
+Haben Girma, Maurice Mines, Christopher Kchao,
+Scott Davert, Mark Baxter, and Robert Stigile for their
+invaluable feedback.
 
 ## License
 
