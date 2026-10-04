@@ -40,7 +40,7 @@ in braille:
   and OpenAI, using your own API key.
 
 We hope these features find their way into mobile platforms and screen
-readers, so braille readers can use them on the devices they already carry.
+readers, so braille readers can use them on their existing devices.
 Dotify's code is open under the Apache 2.0 license for anyone building
 toward that.
 
