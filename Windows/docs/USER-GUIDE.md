@@ -745,7 +745,6 @@ logs are kept in `%LOCALAPPDATA%\Dotify\logs`.
 
 - [README-windows.md](README-windows.md): installing, the full display
   support table, diagnostics, and building the installer.
-- [KNOWN-ISSUES.md](../../KNOWN-ISSUES.md): known problems.
 - [SECURITY.md](../../SECURITY.md): what leaves your computer and what is
   stored on it.
 - [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md): how the pieces fit

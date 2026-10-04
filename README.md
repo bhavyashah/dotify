@@ -12,8 +12,6 @@ Touch, and NLS eReader, the APH Mantis Q40 and Chameleon 20, the HIMS Braille
 Edge and BrailleSense, and displays that follow the USB HID braille
 standard. On Linux, Dotify supports every display BRLTTY supports.
 
-Known issues are listed in [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
-
 ## What Dotify adds to live captions
 
 Phones offer live captions, such as Live Captions on iPhone and Live

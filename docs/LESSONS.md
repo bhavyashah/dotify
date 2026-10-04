@@ -39,8 +39,7 @@ Gotchas that cost us days:
   even though the handle opens.
 - **The Brailliant BI 40X suspends itself off the USB bus when idle.** A
   reader who is caught up produces no writes, so the display falls asleep
-  mid-conversation. Dotify doesn't send a keep-alive write
-  ([KNOWN-ISSUES.md](../KNOWN-ISSUES.md)).
+  mid-conversation. Dotify doesn't send a keep-alive write.
 
 ## How text should move under the fingers
 
