@@ -1,0 +1,6 @@
+installer/vendor/*
+!installer/vendor/reference_g2.json
+installer/stage/
+installer/Output/
+__pycache__/
+.pytest_cache/

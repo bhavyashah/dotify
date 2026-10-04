@@ -1,0 +1,11 @@
+{
+  "dirName": "nemotron-3.5-560ms-int8",
+  "label": "Nemotron 3.5 ASR streaming 0.6b (int8, 560 ms chunks)",
+  "baseUrl": "https://huggingface.co/csukuangfj2/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11/resolve/main/",
+  "files": [
+    { "name": "encoder.int8.onnx", "bytes": 657601403 },
+    { "name": "decoder.int8.onnx", "bytes": 14978075 },
+    { "name": "joiner.int8.onnx", "bytes": 9504438 },
+    { "name": "tokens.txt", "bytes": 131440 }
+  ]
+}

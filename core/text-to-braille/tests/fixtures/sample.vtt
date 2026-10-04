@@ -1,0 +1,18 @@
+WEBVTT - Dotify caption-replay test fixture
+
+NOTE Hand-written for these tests. The words are original text,
+NOTE not copied from any recorded talk or broadcast.
+
+intro
+00:01.000 --> 00:02.400
+<v Narrator>Welcome to the</v>
+
+00:02.400 --> 00:04.000
+harbor lecture series.
+
+00:04.100 --> 00:06.500 position:50% line:85%
+Tonight we talk about
+<i>tides</i> and moonlight.
+
+00:09.000 --> 00:11.000
+A long pause came before this cue.

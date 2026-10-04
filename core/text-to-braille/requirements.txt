@@ -1,0 +1,13 @@
+# Core engine runs on the Python standard library alone.
+# Optional extras by feature:
+
+# Live source from the speech server (WebSocket):
+websockets>=12.0
+
+# Real UEB translation (Linux/WSL): NOT on PyPI as a usable wheel.
+# Install the system package instead, e.g. on Debian/Ubuntu/WSL:
+#     sudo apt install python3-louis liblouis-bin
+# Then the engine auto-selects liblouis over the dev fallback.
+
+# Real braille hardware (Linux, USB): the brlapi bindings ship with BRLTTY.
+#     sudo apt install brltty python3-brlapi

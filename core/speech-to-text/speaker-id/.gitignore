@@ -1,0 +1,3 @@
+# Downloaded embedding models (fetched by download_model.py)
+models/
+__pycache__/

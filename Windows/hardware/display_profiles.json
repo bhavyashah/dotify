@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "id": "nls-ereader",
+      "name": "HumanWare NLS eReader",
+      "vid": "1C71",
+      "pid": "CE01",
+      "transport": "humanware-hid",
+      "usage_pages": ["0093"],
+      "native_supported": true,
+      "hardware_verified": true,
+      "terminal_instructions": "Braille Display > Connected devices > USB connection"
+    },
+    {
+      "id": "aph-mantis-q40",
+      "name": "APH Mantis Q40",
+      "vid": "1C71",
+      "pid": "C111",
+      "transport": "humanware-hid",
+      "usage_pages": ["0093"],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB terminal connection"
+    },
+    {
+      "id": "aph-chameleon-20",
+      "name": "APH Chameleon 20",
+      "vid": "1C71",
+      "pid": "C101",
+      "transport": "humanware-hid",
+      "usage_pages": ["0093"],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB terminal connection"
+    },
+    {
+      "id": "brailliant-bi-40x",
+      "name": "HumanWare Brailliant BI 40X",
+      "vid": "1C71",
+      "pid": "C131",
+      "transport": "humanware-hid",
+      "usage_pages": ["0093"],
+      "native_supported": true,
+      "hardware_verified": true,
+      "terminal_instructions": "Select the display's USB terminal connection"
+    },
+    {
+      "id": "brailliant-bi-20x",
+      "name": "HumanWare Brailliant BI 20X",
+      "vid": "1C71",
+      "pid": "C141",
+      "transport": "humanware-hid",
+      "usage_pages": ["0093"],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB terminal connection"
+    },
+    {
+      "id": "brailleone-20",
+      "name": "HumanWare BrailleOne 20",
+      "vid": "1C71",
+      "pid": "C121",
+      "transport": "humanware-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB terminal connection"
+    },
+    {
+      "id": "brailliant-bi-b-hid",
+      "name": "HumanWare Brailliant BI 32/40/80 (HID)",
+      "vid": "1C71",
+      "pid": "C006",
+      "transport": "humanware-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB HID terminal connection"
+    },
+    {
+      "id": "brailliant-bi14-hid",
+      "name": "HumanWare Brailliant BI 14 (HID)",
+      "vid": "1C71",
+      "pid": "C022",
+      "transport": "humanware-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB HID terminal connection"
+    },
+    {
+      "id": "braillenote-touch",
+      "name": "HumanWare BrailleNote Touch",
+      "vid": "1C71",
+      "pid": "C00A",
+      "transport": "humanware-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Open Braille Terminal and select USB"
+    },
+    {
+      "id": "braillenote-touch-v2",
+      "name": "HumanWare BrailleNote Touch v2 / Touch Plus",
+      "vid": "1C71",
+      "pid": "C00E",
+      "transport": "humanware-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Open Braille Terminal and select USB"
+    },
+    {
+      "id": "brailliant-bi-b-serial",
+      "name": "HumanWare Brailliant BI 32/40/80 (USB serial)",
+      "vid": "1C71",
+      "pid": "C005",
+      "transport": "humanware-serial",
+      "usage_pages": [],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB serial terminal connection"
+    },
+    {
+      "id": "brailliant-bi14-serial",
+      "name": "HumanWare Brailliant BI 14 (USB serial)",
+      "vid": "1C71",
+      "pid": "C021",
+      "transport": "humanware-serial",
+      "usage_pages": [],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB serial terminal connection"
+    },
+    {
+      "id": "hims-braille-edge-3s",
+      "name": "HIMS Braille Edge 3S",
+      "vid": "045E",
+      "pid": "940A",
+      "transport": "hims-hid",
+      "usage_pages": [],
+      "allow_descriptor_fallback": true,
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the display's USB HID screen-reader connection"
+    },
+    {
+      "id": "hims-syncbraille-serial",
+      "name": "HIMS SyncBraille (USB serial)",
+      "vid": "0403",
+      "pid": "6001",
+      "transport": "hims-serial",
+      "usage_pages": [],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the USB screen-reader connection"
+    },
+    {
+      "id": "hims-braille-edge-2s-serial",
+      "name": "HIMS Braille Edge 2S (USB serial)",
+      "vid": "1A86",
+      "pid": "55D3",
+      "transport": "hims-serial",
+      "usage_pages": [],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the USB screen-reader connection"
+    },
+    {
+      "id": "braillesense-legacy-usb",
+      "name": "HIMS BrailleSense family (legacy USB identity)",
+      "vid": "045E",
+      "pid": "930A",
+      "transport": "hims-custom-bulk",
+      "usage_pages": [],
+      "native_supported": false,
+      "hardware_verified": false,
+      "terminal_instructions": "Open Terminal for Screen Reader and select USB"
+    },
+    {
+      "id": "hims-braille-edge-bulk",
+      "name": "HIMS Braille EDGE 40 (custom bulk USB)",
+      "vid": "045E",
+      "pid": "930B",
+      "transport": "hims-custom-bulk",
+      "usage_pages": [],
+      "native_supported": false,
+      "hardware_verified": false,
+      "terminal_instructions": "Select the USB screen-reader connection"
+    }
+  ],
+  "bluetooth_profiles": [
+    {
+      "id": "humanware-bluetooth",
+      "name": "HumanWare / APH braille display (Bluetooth)",
+      "transport": "humanware-bluetooth",
+      "name_prefixes": [
+        "NLS eReader",
+        "eReader HumanWare",
+        "Brailliant BI",
+        "Brailliant 80",
+        "APH Chameleon",
+        "Chameleon 20",
+        "APH Mantis",
+        "Mantis Q40",
+        "BrailleNote Touch",
+        "BrailleOne",
+        "Humanware BrailleOne"
+      ],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Pair the display in Windows Settings > Bluetooth & devices, then on the display choose Braille Display > Connected devices > Bluetooth connection"
+    },
+    {
+      "id": "hims-bluetooth",
+      "name": "HIMS braille display (Bluetooth)",
+      "transport": "hims-bluetooth",
+      "name_prefixes": [
+        "Braille Sense",
+        "BrailleSense",
+        "Braille EDGE",
+        "BrailleEdge",
+        "Smart Beetle",
+        "SmartBeetle",
+        "SyncBraille"
+      ],
+      "native_supported": true,
+      "hardware_verified": false,
+      "terminal_instructions": "Pair the display in Windows Settings > Bluetooth & devices, then open its Terminal for Screen Reader over Bluetooth"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Dotify app tile: near-black square, white mark at the XS optical cut
+       (the brand kit's 22-34 px weight - browser tabs and the Chromium
+       app-mode taskbar show favicons at 16-32 px). -->
+  <rect width="64" height="64" rx="14.2" fill="#0E0E12"/>
+  <g transform="translate(8.32,14.588) scale(0.348235) translate(13,13)">
+    <path d="M55 0 L16 0 A16 16 0 0 0 0 16 L0 36 A16 16 0 0 0 16 52 L21 52 L21 74 L43 52 L55 52"
+      fill="none" stroke="#FFFFFF" stroke-width="10.153846" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M55 0 L94 0 A16 16 0 0 1 110 16 L110 36 A16 16 0 0 1 94 52 L55 52"
+      fill="none" stroke="#FFFFFF" stroke-width="14.384615" stroke-linecap="round" stroke-dasharray="0.1 24.611"/>
+  </g>
+</svg>

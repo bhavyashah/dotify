@@ -1,0 +1,18 @@
+# Secrets and personal data — never commit
+.env
+*.key
+speakers/
+
+# Session recordings (raw room audio and transcripts; see
+# core/speech-to-text/recorder.js) and WER-replay outputs
+recordings/
+*.wav
+*.ref.txt
+*.hyp.txt
+
+# Build and tool artifacts
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytmp/

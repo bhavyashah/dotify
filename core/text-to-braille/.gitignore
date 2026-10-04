@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.pytmp/
+.pytest_cache/
+transcript.txt
+ticker_*.log

@@ -1,0 +1,11 @@
+Dotify
+Copyright 2026 Bhavya Shah and the Dotify contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The Windows package bundles third-party software under its own licenses,
+including liblouis (LGPL-2.1+), sherpa-onnx (Apache-2.0), Python, and
+Node.js. See Windows/installer/THIRD-PARTY-NOTICES.md.
+
+The Atkinson Hyperlegible font in core/speech-to-text/public/brand/ is
+licensed under the SIL Open Font License 1.1 (see ATKINSON-OFL.txt there).

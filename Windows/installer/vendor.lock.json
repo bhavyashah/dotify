@@ -1,0 +1,61 @@
+{
+  "liblouis": {
+    "url": "https://github.com/liblouis/liblouis/releases/download/v3.38.0/liblouis-3.38.0-win64.zip",
+    "file": "liblouis-win64.zip",
+    "sha256": "3210c585074fb975ec49bc580f331ea2980a241065e304feb294087d6678d3b3",
+    "version": "3.38.0",
+    "wsl_reference_version": "3.20.0"
+  },
+  "python": {
+    "url": "https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-amd64.zip",
+    "file": "python-embed.zip",
+    "sha256": "91d828c2da3a029b41699e918674a0cb379c02cf20dab9c501306885f837402a"
+  },
+  "python_arm64": {
+    "url": "https://www.python.org/ftp/python/3.13.9/python-3.13.9-embed-arm64.zip",
+    "file": "python-embed-arm64.zip",
+    "sha256": "cba392bd5c7aed68b26d1b523822cc3d80802c085481dfde79262ebfc7179d26"
+  },
+  "sherpa_onnx_arm64": {
+    "url": "https://huggingface.co/csukuangfj2/sherpa-onnx-wheels/resolve/main/cpu/1.13.4/sherpa_onnx-1.13.4-cp313-cp313-win_arm64.whl",
+    "file": "sherpa_onnx-1.13.4-cp313-cp313-win_arm64.whl",
+    "sha256": "a70444ecc5a7c99a0c7020413e1b960d9ad698daf1ae9153991e98f5112e6b03",
+    "comment": "k2-fsa's own wheel index (PyPI carries no win_arm64 builds); same 1.13.4 as the x64 pin"
+  },
+  "sherpa_onnx_core_arm64": {
+    "url": "https://huggingface.co/csukuangfj2/sherpa-onnx-wheels/resolve/main/cpu/1.13.4/sherpa_onnx_core-1.13.4-py3-none-win_arm64.whl",
+    "file": "sherpa_onnx_core-1.13.4-py3-none-win_arm64.whl",
+    "sha256": "03e17d7a9958b2a5750b4ed19af93021400df5a8e266a74a9805578cdcab1cfe",
+    "comment": "native runtime half of the sherpa-onnx 1.13.x package split"
+  },
+  "node": {
+    "url": "https://nodejs.org/dist/v24.12.0/node-v24.12.0-win-x64.zip",
+    "file": "node.zip",
+    "sha256": "9c125f61ae947b52e779095830f9cac267846a043ef7192183c84016aaad2812"
+  },
+  "websockets": {
+    "pin": "websockets==16.1"
+  },
+  "pyserial": {
+    "pin": "pyserial==3.5"
+  },
+  "sherpa_onnx": {
+    "pin": "sherpa-onnx==1.13.4"
+  },
+  "numpy": {
+    "pin": "numpy==2.5.1"
+  },
+  "onnxruntime": {
+    "pin": "onnxruntime==1.27.0"
+  },
+  "speaker_model": {
+    "url": "https://huggingface.co/Wespeaker/wespeaker-voxceleb-resnet34-LM/resolve/main/voxceleb_resnet34_LM.onnx",
+    "file": "resnet34_voxceleb_lm.onnx",
+    "sha256": "7bb2f06e9df17cdf1ef14ee8a15ab08ed28e8d0ef5054ee135741560df2ec068",
+    "version": "wespeaker-voxceleb-resnet34-LM",
+    "license": "Apache-2.0"
+  },
+  "ws": {
+    "pin": "ws@8.21.0"
+  }
+}

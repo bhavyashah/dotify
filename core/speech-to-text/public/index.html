@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dotify</title>
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<style>
+  /* One near-black ground, white ink, a muted secondary, hairline borders,
+     and a single violet accent for live things: the primary action and the
+     words under the braille reader's fingers. */
+  :root {
+    --ground: #0E0E12;
+    --surface: #17171C;
+    --hairline: #26262C;
+    --ink: #FFFFFF;
+    --ink-2: #b9b7b0;
+    --ink-hint: #85838e;
+    --live: #A49BF5;
+    --alert: #FF8A80;
+  }
+  /* Atkinson Hyperlegible (Braille Institute, OFL — brand/ATKINSON-OFL.txt).
+     Bundled, never a CDN: this page must render offline. */
+  @font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("brand/atkinson-regular.ttf") format("truetype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("brand/atkinson-bold.ttf") format("truetype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  body {
+    font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+    background: var(--ground); color: var(--ink);
+    max-width: 48rem; margin: 2rem auto; padding: 0 1.25rem;
+    line-height: 1.55;
+  }
+  /* Top row: the wordmark, then Settings. While Settings is open the main
+     content hides, so the page is always one surface. */
+  .app-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; margin: 0 0 1.75rem;
+  }
+  .app-top h1 { margin: 0; }
+  #app-main[hidden] { display: none; }
+  button {
+    font-family: inherit; font-size: 1.05rem; font-weight: 700;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--hairline); border-radius: .6rem;
+    padding: .6rem 1.4rem; min-height: 3rem; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--ink-2); }
+  button:disabled { color: var(--ink-hint); cursor: default; }
+  /* Start transcription is the one primary action. */
+  #toggle { background: var(--live); border-color: var(--live); color: var(--ground); }
+  #toggle:hover:not(:disabled) { background: #B8B0F8; border-color: #B8B0F8; }
+  /* Disabled (while connecting), it drops the accent like other buttons. */
+  #toggle:disabled { background: var(--surface); border-color: var(--hairline); color: var(--ink-hint); }
+  button:focus-visible, select:focus-visible, input:focus-visible,
+  textarea:focus-visible, summary:focus-visible, #finalized:focus-visible {
+    outline: 3px solid var(--live); outline-offset: 2px;
+  }
+  select, input[type="text"], input[type="password"], input[type="number"],
+  textarea {
+    font-family: inherit; font-size: 1.05rem;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--hairline); border-radius: .5rem;
+    padding: .45rem .6rem;
+  }
+  ::placeholder { color: var(--ink-hint); }
+  select { margin-bottom: 1rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 0 0 1rem; }
+  details { border: 1px solid var(--hairline); border-radius: .6rem; padding: .8rem .9rem; margin: 0 0 1rem; }
+  fieldset { border: 1px solid var(--hairline); border-radius: .6rem; padding: .8rem .9rem; margin: 0 0 1rem; }
+  fieldset legend { font-weight: 700; padding: 0 .35rem; }
+  fieldset div { margin: .4rem 0; }
+  #max-speakers { width: 5rem; font-size: 1rem; padding: .25rem; }
+  summary { cursor: pointer; font-weight: 700; }
+  #status { color: var(--ink-2); margin: 0 0 1rem; }
+  label[for="miclevel"] {
+    font-size: .8rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-2);
+  }
+  /* Clear history shares the transcript's label row, so reaching it never
+     means walking the text it exists to shrink. */
+  #finalized-label {
+    font-size: .8rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--live);
+  }
+  .transcript-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: .75rem; margin: 1.5rem 0 .25rem;
+  }
+  .transcript-head button { font-size: .95rem; padding: .45rem .9rem; min-height: 2.6rem; }
+  meter { width: min(100%, 20rem); height: .9rem; }
+  meter::-webkit-meter-bar {
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: .45rem;
+  }
+  meter::-webkit-meter-optimum-value,
+  meter::-webkit-meter-suboptimum-value,
+  meter::-webkit-meter-even-less-good-value { background: var(--live); }
+  meter::-moz-meter-bar { background: var(--live); }
+  /* Settings opens to category buttons; one category panel shows at a time.
+     The Windows overlay fills the Braille and Help panels. */
+  #settings { border: 0; padding: 0; margin: 0; }
+  #settings > summary {
+    display: inline-block; box-sizing: border-box; list-style: none;
+    font-size: 1.05rem; font-weight: 700; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--hairline);
+    border-radius: .6rem; padding: .6rem 1.4rem; min-height: 3rem;
+  }
+  #settings > summary::-webkit-details-marker { display: none; }
+  #settings > summary:hover { border-color: var(--ink-2); }
+  #settings[open] { flex-basis: 100%; }
+  #settings[open] > summary { margin-bottom: 1rem; }
+  #settings h2 { font-size: 1.2rem; font-weight: 700; margin: 1rem 0 .4rem; }
+  #settings-categories button, .settings-category-back { display: block; margin: .5rem 0; }
+  #settings [hidden] { display: none !important; }
+  .provider-row { margin-top: .8rem; }
+  .provider-row input { display: block; box-sizing: border-box; width: min(100%, 34rem); font-size: 1rem; padding: .4rem; margin: .25rem 0 .5rem; }
+  .provider-row button { font-size: 1rem; padding: .4rem .8rem; min-height: 2.4rem; margin-right: .4rem; }
+  #provider-config-status { min-height: 1.5rem; font-weight: 600; }
+  textarea { width: 100%; font-size: 1.05rem; margin-top: 0.25rem; box-sizing: border-box; }
+  /* The transcript is a read-only textbox div, not a textarea, because the
+     Windows app styles ranges of it. Already-read text is muted so the
+     current band below it leads. */
+  #finalized { box-sizing: border-box; width: 100%; min-height: 6rem; max-height: 22rem;
+    overflow-y: auto; white-space: pre-wrap; overflow-wrap: break-word; font-size: 1.1rem;
+    margin-top: 0.25rem; border: 1px solid var(--hairline); border-radius: .5rem .5rem 0 0;
+    padding: .3rem .5rem; background: var(--surface); color: var(--ink-2); }
+  /* The current and pending bands: the words on the braille display now,
+     then what it still owes the reader. Fed by the Windows braille panel;
+     empty and hidden without it. White on the violet wash stays >= 7:1. */
+  #current-band { box-sizing: border-box; width: 100%; white-space: pre-wrap;
+    overflow-wrap: break-word; font-size: 1.1rem; padding: .3rem .5rem;
+    background: rgba(164, 155, 245, .4); color: var(--ink); }
+  #pending-band { box-sizing: border-box; width: 100%; white-space: pre-wrap;
+    overflow-wrap: break-word; font-size: 1.1rem; padding: .3rem .5rem;
+    color: var(--ink-2); max-height: 5.5rem; overflow: hidden; }
+  #current-band:empty, #pending-band:empty { display: none; }
+  label, h1 { display: block; }
+  /* The wordmark: the svg carries the name for screen readers. */
+  h1 svg { display: block; height: 1.5rem; width: auto; max-width: 100%; }
+</style>
+</head>
+<body>
+<header class="app-top">
+<h1><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.7 94.5" role="img" aria-label="Dotify"><title>Dotify</title><g transform="translate(6,6)"><g transform="scale(1.11538)"><path d="M55 0 L16 0 A16 16 0 0 0 0 16 L0 36 A16 16 0 0 0 16 52 L21 52 L21 74 L43 52 L55 52" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M55 0 L94 0 A16 16 0 0 1 110 16 L110 36 A16 16 0 0 1 94 52 L55 52" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="0.1 13.379"/></g><g transform="translate(156.692,0)"><path d="M0 0 L16 0" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M16 0 A30 30 0 0 1 16 60" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M16 60 L0 60" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M0 0 L0 60" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M0 30 A30 30 0 1 0 60 30 A30 30 0 1 0 0 30" transform="translate(62,0)" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M0 0 L44 0" transform="translate(138,0)" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M22 0 L22 60" transform="translate(138,0)" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M0 0 L0 60" transform="translate(196,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 14.900"/><path d="M0 0 L0 60" transform="translate(218,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 14.900"/><path d="M0 0 L34 0" transform="translate(218,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 16.900"/><path d="M0 28 L28 28" transform="translate(218,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 13.900"/><path d="M0 0 L22 32" transform="translate(270,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 12.844"/><path d="M44 0 L22 32" transform="translate(270,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 12.844"/><path d="M22 32 L22 60" transform="translate(270,0)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0.1 13.900"/></g></g></svg></h1>
+
+<!-- Set-and-forget configuration lives behind this disclosure; the main page
+     is for every session. -->
+<details id="settings">
+  <summary>Settings</summary>
+
+<nav id="settings-categories" aria-labelledby="settings-categories-heading">
+  <h2 id="settings-categories-heading" tabindex="-1">Settings categories</h2>
+  <button type="button" data-settings-category="transcription"
+    aria-controls="settings-transcription">Transcription</button>
+  <button type="button" data-settings-category="keys"
+    aria-controls="settings-category-keys">API keys</button>
+  <button type="button" data-settings-category="braille"
+    aria-controls="settings-category-braille" hidden>Braille</button>
+  <button type="button" data-settings-category="help"
+    aria-controls="settings-category-help" hidden>Help and tools</button>
+  <button type="button" data-settings-category="developer"
+    aria-controls="settings-category-developer" hidden>Developer options</button>
+</nav>
+
+<!-- Category panels stay mounted when hidden so unsaved field content and
+     disclosure state survive navigation. -->
+<section id="settings-transcription" class="settings-category-panel"
+  aria-labelledby="settings-transcription-heading" hidden>
+<button type="button" class="settings-category-back">Back to settings categories</button>
+<h2 id="settings-transcription-heading" tabindex="-1">Transcription settings</h2>
+
+<label for="engine">Transcription model</label>
+<!-- Every model here needs a key; the Windows overlay adds its offline
+     model. The text before " (" is each engine's display name. -->
+<select id="engine">
+  <option value="elevenlabs" selected>ElevenLabs Scribe v2 Realtime (needs key)</option>
+  <option value="assemblyai">AssemblyAI Universal-Streaming English (needs key)</option>
+  <option value="deepgram">Deepgram Nova-3 (needs key)</option>
+  <option value="openai">OpenAI gpt-live-transcribe (needs key)</option>
+</select>
+
+<p id="engine-help">Stop transcription before changing models.</p>
+
+<details id="personal-dictionary">
+  <summary>Personal dictionary</summary>
+  <p>Add names and words that get misheard. Models learn them the next time
+  transcription starts.</p>
+  <ul id="dictionary-list"></ul>
+  <div>
+    <label for="dictionary-word">Word or name</label>
+    <input id="dictionary-word" type="text" maxlength="40" autocomplete="off" spellcheck="false">
+    <label for="dictionary-sounds-like">Always replace (optional, comma separated wrong spellings to rewrite)</label>
+    <input id="dictionary-sounds-like" type="text" maxlength="220" autocomplete="off" spellcheck="false">
+    <button id="dictionary-add" type="button">Add word</button>
+  </div>
+  <p id="dictionary-status" role="status" aria-live="polite"></p>
+</details>
+
+<details id="conversation-features">
+  <summary>Conversation mode (experimental)</summary>
+<fieldset id="diarization-options">
+  <legend>Conversation mode (AssemblyAI only)</legend>
+  <div>
+    <input id="conversation-mode" type="checkbox">
+    <label for="conversation-mode" style="display:inline">Label who is speaking (A:, B:). Text arrives in larger, less frequent chunks</label>
+  </div>
+  <div>
+    <label for="max-speakers">How many people are talking (leave blank if unsure)</label>
+    <input id="max-speakers" type="number" min="1" max="10" step="1" inputmode="numeric" disabled>
+  </div>
+</fieldset>
+<fieldset id="speaker-naming">
+  <legend>Named speakers (AssemblyAI conversation mode)</legend>
+  <p>Enroll a person once and their name replaces A: or B:. Voiceprints stay
+  on this computer.</p>
+  <ul id="speakers-list"></ul>
+  <div>
+    <label for="enroll-name">Person's name</label>
+    <input id="enroll-name" type="text" maxlength="40" autocomplete="off" spellcheck="false">
+    <button id="enroll-button" type="button">Enroll voice (records 20 seconds)</button>
+  </div>
+  <p id="speakers-status" role="status" aria-live="polite"></p>
+</fieldset>
+</details>
+</section>
+
+<section id="settings-category-braille" class="settings-category-panel"
+  aria-labelledby="settings-braille-heading" hidden>
+  <button type="button" class="settings-category-back">Back to settings categories</button>
+  <h2 id="settings-braille-heading" tabindex="-1">Braille settings</h2>
+</section>
+
+<section id="settings-category-help" class="settings-category-panel"
+  aria-labelledby="settings-help-heading" hidden>
+  <button type="button" class="settings-category-back">Back to settings categories</button>
+  <h2 id="settings-help-heading" tabindex="-1">Help and tools</h2>
+</section>
+
+<section id="settings-category-keys" class="settings-category-panel"
+  aria-labelledby="settings-keys-heading" hidden>
+  <button type="button" class="settings-category-back">Back to settings categories</button>
+  <h2 id="settings-keys-heading" tabindex="-1">API keys</h2>
+
+<div id="provider-config">
+  <p>Each cloud transcription model needs its provider's API key. Keys are
+  saved only on this computer and never displayed.</p>
+  <div class="provider-row">
+    <label for="openai-key">OpenAI API key</label>
+    <input id="openai-key" type="password" autocomplete="off" spellcheck="false">
+    <button type="button" data-save-provider="openai">Save OpenAI key</button>
+    <button type="button" data-remove-provider="openai">Remove OpenAI key</button>
+  </div>
+  <div class="provider-row">
+    <label for="assemblyai-key">AssemblyAI API key</label>
+    <input id="assemblyai-key" type="password" autocomplete="off" spellcheck="false">
+    <button type="button" data-save-provider="assemblyai">Save AssemblyAI key</button>
+    <button type="button" data-remove-provider="assemblyai">Remove AssemblyAI key</button>
+  </div>
+  <div class="provider-row">
+    <label for="deepgram-key">Deepgram API key</label>
+    <input id="deepgram-key" type="password" autocomplete="off" spellcheck="false">
+    <button type="button" data-save-provider="deepgram">Save Deepgram key</button>
+    <button type="button" data-remove-provider="deepgram">Remove Deepgram key</button>
+  </div>
+  <div class="provider-row">
+    <label for="elevenlabs-key">ElevenLabs API key</label>
+    <input id="elevenlabs-key" type="password" autocomplete="off" spellcheck="false">
+    <button type="button" data-save-provider="elevenlabs">Save ElevenLabs key</button>
+    <button type="button" data-remove-provider="elevenlabs">Remove ElevenLabs key</button>
+  </div>
+  <p id="provider-config-status" role="status" aria-live="polite"></p>
+</div>
+</section>
+
+<!-- Session recording feeds the accuracy tools (tools/wer-replay.js). Its
+     category stays hidden unless the page is opened with ?dev=1. -->
+<section id="settings-category-developer" class="settings-category-panel"
+  aria-labelledby="settings-developer-heading" hidden>
+  <button type="button" class="settings-category-back">Back to settings categories</button>
+  <h2 id="settings-developer-heading" tabindex="-1">Developer options</h2>
+  <div>
+    <input id="record-session" type="checkbox">
+    <label for="record-session" style="display:inline">Record sessions for
+    accuracy measurement. Recordings stay on this computer.</label>
+  </div>
+</section>
+</details>
+</header>
+
+<main id="app-main">
+
+<div class="actions">
+<button id="toggle" type="button">Start transcription</button>
+<button id="pause-toggle" type="button" disabled
+  title="Turns the microphone off until you resume">Pause microphone</button>
+</div>
+
+<p id="status" role="status" aria-live="polite">Idle.</p>
+
+<label for="miclevel">Microphone level</label>
+<meter id="miclevel" min="0" max="100" low="10" optimum="60" value="0">0</meter>
+
+<!-- The in-progress hypothesis. Engine scripts write it and the overlay's
+     /ingest feed reads it, but self-rewriting text is noise on a screen
+     reader, so it stays hidden. The overlay requires the node. -->
+<div id="partial" hidden aria-hidden="true"></div>
+
+<!-- Clear history sits on the label row: the Windows overlay inserts its
+     typing section directly after the box. -->
+<p class="transcript-head"><span id="finalized-label">Transcript</span>
+<button type="button" id="clear-history" title="Removes text you have already read">Clear history</button></p>
+<div id="finalized" tabindex="0" role="textbox" aria-readonly="true" aria-multiline="true" aria-labelledby="finalized-label"></div>
+<!-- History above ends where the reader's fingers are; these bands show
+     the words on the display now, then what it still owes. They are not
+     live regions: a screen reader reads them on navigation. -->
+<div id="current-band" role="group" aria-label="On the braille display"></div>
+<div id="pending-band" role="group" aria-label="Pending for the braille display"></div>
+</main>
+
+<script>
+// Settings navigation: category buttons, one panel at a time. Hidden panels
+// stay mounted so their state survives; overlays reveal and fill their
+// platform categories through window.dotifySettings.
+(() => {
+  const settings = document.getElementById('settings');
+  const categories = document.getElementById('settings-categories');
+  const panels = Array.from(document.querySelectorAll('.settings-category-panel'));
+  const buttons = Array.from(categories.querySelectorAll('[data-settings-category]'));
+  let returnButton = null;
+
+  function showCategories({ focus = true } = {}) {
+    panels.forEach((panel) => { panel.hidden = true; });
+    buttons.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    categories.hidden = false;
+    if (focus) (returnButton || document.getElementById('settings-categories-heading')).focus();
+  }
+  function openCategory(name, { focus = true } = {}) {
+    const button = buttons.find((item) => item.dataset.settingsCategory === name);
+    if (!button || button.hidden) return false;
+    const panel = document.getElementById(button.getAttribute('aria-controls'));
+    if (!panel) return false;
+    returnButton = button;
+    categories.hidden = true;
+    buttons.forEach((item) => item.setAttribute(
+      'aria-expanded', item === button ? 'true' : 'false'));
+    panels.forEach((item) => { item.hidden = item !== panel; });
+    if (focus) panel.querySelector('h2')?.focus();
+    return true;
+  }
+  function enableCategory(name) {
+    const button = buttons.find((item) => item.dataset.settingsCategory === name);
+    if (button) button.hidden = false;
+  }
+  buttons.forEach((button) => {
+    button.setAttribute('aria-expanded', 'false');
+    button.addEventListener('click', () => openCategory(button.dataset.settingsCategory));
+  });
+  document.querySelectorAll('.settings-category-back').forEach((button) => {
+    button.addEventListener('click', () => showCategories());
+  });
+  settings.addEventListener('toggle', () => {
+    // Hidden, not unmounted: the transcript keeps updating.
+    const main = document.getElementById('app-main');
+    if (main) main.hidden = settings.open;
+    if (!settings.open) showCategories({ focus: false });
+  });
+  settings.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && categories.hidden) {
+      event.preventDefault();
+      showCategories();
+    }
+  });
+  window.dotifySettings = { enableCategory, openCategory, showCategories };
+})();
+
+const toggleBtn = document.getElementById('toggle');
+const statusEl = document.getElementById('status');
+const partialEl = document.getElementById('partial');
+const finalizedEl = document.getElementById('finalized');
+const micLevelEl = document.getElementById('miclevel');
+
+// --- The three-band transcript ----------------------------------------------
+// The finalized record is one string. #finalized shows the part before the
+// reading boundary (history), followed by #current-band (the words on the
+// braille display) and #pending-band (what the display still owes), all fed
+// by the Windows braille panel through setBands. Without the panel the
+// boundary stays null and the box shows the whole record. Lines starting
+// Recap:/Reply:/Human: are tinted; the prefix tells a screen reader what the
+// color tells a sighted user.
+const currentBandEl = document.getElementById('current-band');
+const pendingBandEl = document.getElementById('pending-band');
+// Pastel tints, each ≥ 7:1 on the dark ground.
+const BAND_PREFIX_COLORS = {
+  'Recap:': '#ce93d8', 'Reply:': '#90caf9', 'Human:': '#a5d6a7',
+};
+let recordText = '';
+let bandBoundary = null;   // record offset where history ends; null = all
+let renderedHistory = '';  // what #finalized currently shows
+
+function lineSpan(line) {
+  const span = document.createElement('span');
+  applyLineColor(span, line);
+  span.textContent = line;
+  return span;
+}
+function applyLineColor(span, line) {
+  let color = '';
+  for (const prefix in BAND_PREFIX_COLORS) {
+    if (line.startsWith(prefix)) { color = BAND_PREFIX_COLORS[prefix]; break; }
+  }
+  span.style.color = color;
+}
+function rebuildHistory(history) {
+  finalizedEl.textContent = '';
+  history.split('\n').forEach((line, index) => {
+    if (index) finalizedEl.appendChild(document.createTextNode('\n'));
+    finalizedEl.appendChild(lineSpan(line));
+  });
+}
+// Appends touch only the tail; re-rendering a session-long transcript
+// several times a second would be wasteful.
+function appendHistory(delta) {
+  const parts = delta.split('\n');
+  let last = finalizedEl.lastChild;
+  if (parts[0]) {
+    if (!last || last.nodeType !== Node.ELEMENT_NODE) {
+      last = lineSpan('');
+      finalizedEl.appendChild(last);
+    }
+    last.textContent += parts[0];
+    applyLineColor(last, last.textContent);   // a prefix may just have landed
+  }
+  for (let i = 1; i < parts.length; i++) {
+    finalizedEl.appendChild(document.createTextNode('\n'));
+    finalizedEl.appendChild(lineSpan(parts[i]));
+  }
+}
+function renderHistory() {
+  const history = Number.isInteger(bandBoundary)
+    ? recordText.slice(0, Math.max(0, Math.min(bandBoundary, recordText.length)))
+    : recordText;
+  if (history === renderedHistory) return;
+  if (renderedHistory && history.startsWith(renderedHistory)) {
+    appendHistory(history.slice(renderedHistory.length));
+  } else {
+    rebuildHistory(history);
+  }
+  renderedHistory = history;
+  finalizedEl.scrollTop = finalizedEl.scrollHeight;
+}
+function extendFinal(text) {
+  recordText += text;
+  renderHistory();
+}
+function appendFinal(text) {
+  extendFinal((recordText ? '\n' : '') + text);
+}
+function clearFinal() {
+  recordText = '';
+  bandBoundary = Number.isInteger(bandBoundary) ? 0 : null;
+  renderedHistory = '';
+  finalizedEl.textContent = '';
+}
+// Reply text lands mid-record, at the reading position; the boundary shifts
+// with it. Rare, so a full rebuild is fine.
+function insertRecord(at, text) {
+  const cut = Math.max(0, Math.min(at, recordText.length));
+  recordText = recordText.slice(0, cut) + text + recordText.slice(cut);
+  if (Number.isInteger(bandBoundary) && cut <= bandBoundary) {
+    bandBoundary += text.length;
+  }
+  renderedHistory = '\x00';  // force a rebuild (never a real prefix)
+  renderHistory();
+}
+// The panel's feed: the reading boundary (a record offset, or null when
+// unknown: history then shows everything) and the band texts.
+function setBands(update) {
+  if ('boundary' in update) bandBoundary = update.boundary;
+  if ('current' in update && currentBandEl.textContent !== update.current) {
+    currentBandEl.textContent = update.current;
+  }
+  if ('pending' in update && pendingBandEl.textContent !== update.pending) {
+    pendingBandEl.textContent = update.pending;
+  }
+  renderHistory();
+}
+// Clear history removes only text already read: everything before the
+// reading boundary, or the whole box when the boundary is unknown. It clears
+// the view only; the braille queue and transcript.txt are untouched.
+function clearHistory() {
+  if (Number.isInteger(bandBoundary) && bandBoundary >= 0) {
+    if (bandBoundary > 0) {
+      recordText = recordText.slice(Math.min(bandBoundary, recordText.length));
+      bandBoundary = 0;
+      renderedHistory = '\x00';
+      renderHistory();
+    }
+  } else {
+    clearFinal();
+  }
+  // Holders of offsets into the record (the braille panel) resync on this.
+  finalizedEl.dispatchEvent(new CustomEvent('dotify-history-cleared'));
+  setStatus('History cleared.');
+}
+document.getElementById('clear-history').addEventListener('click', clearHistory);
+window.dotifyTranscript = {
+  element: finalizedEl, append: appendFinal, extend: extendFinal, clear: clearFinal,
+  clearHistory,
+  record: () => recordText, insert: insertRecord, setBands,
+};
+
+// Ctrl+A in the box selects the transcript, not the whole page.
+finalizedEl.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
+    event.preventDefault();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(finalizedEl);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+});
+
+let lastMeterUpdate = 0;
+function updateMicLevel(float32) {
+  const now = performance.now();
+  if (now - lastMeterUpdate < 150) return;
+  lastMeterUpdate = now;
+  let sum = 0;
+  for (let i = 0; i < float32.length; i++) sum += float32[i] * float32[i];
+  const rms = Math.sqrt(sum / float32.length);
+  const level = Math.min(100, Math.round(rms * 400));
+  micLevelEl.value = level;
+  micLevelEl.textContent = level;
+}
+
+const TARGET_RATE = 24000;
+let running = false;
+let ws = null;
+let audioContext = null;
+let mediaStream = null;
+let workletNode = null;
+let partials = new Map(); // item_id -> current full hypothesis for the segment
+let lastFinalSeq = 0;     // newest final rendered; /audio replays after it
+const engineEl = document.getElementById('engine');
+// Set once the user picks an engine; renderProviderConfig's default never
+// overrides a choice. Programmatic value changes do not fire 'change'.
+let engineUserChosen = false;
+engineEl.addEventListener('change', () => { engineUserChosen = true; });
+const conversationEl = document.getElementById('conversation-mode');
+const maxSpeakersEl = document.getElementById('max-speakers');
+const recordEl = document.getElementById('record-session');
+// ?dev=1 reveals the recording control; otherwise it stays hidden and off.
+if (new URLSearchParams(location.search).get('dev') === '1') {
+  window.dotifySettings.enableCategory('developer');
+}
+// Recording news before the server's 'ready' folds into the "Speak now"
+// announcement (recordingNote); once live it is announced on its own.
+let recordingNote = '';
+let sessionLive = false;
+// Mid-session the toggle starts or stops the recorder at once; the server's
+// confirmation drives the announcement. Otherwise it arms the next session.
+recordEl.addEventListener('change', () => {
+  if (running && ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'record', on: recordEl.checked }));
+  }
+});
+// The speaker-count hint only means anything while conversation mode is on.
+conversationEl.addEventListener('change', () => {
+  maxSpeakersEl.disabled = !conversationEl.checked;
+});
+const providerConfigStatus = document.getElementById('provider-config-status');
+let providerConfigToken = '';
+
+// The page always runs the balanced preset. Posting it on load also undoes a
+// preset left behind by a test or experiment.
+function latencyMode() { return 'balanced'; }
+function pushLatency() {
+  fetch('/latency', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: latencyMode() }),
+  }).catch(() => { /* /audio re-asserts balanced at session start */ });
+}
+pushLatency();
+
+// Engine display names, from the static <option> text before " (".
+const PROVIDER_LABELS = Object.fromEntries(Array.from(engineEl.options,
+  (option) => [option.value, option.textContent.replace(/ \(.*\)$/, '')]));
+
+function renderProviderConfig(config) {
+  providerConfigToken = config.token;
+  for (const [name, details] of Object.entries(config.providers)) {
+    const option = engineEl.querySelector(`option[value="${name}"]`);
+    if (!option) continue;
+    const providerLabel = PROVIDER_LABELS[name] || name;
+    option.textContent = `${providerLabel} (${details.configured ? 'configured' : 'key required'})`;
+    option.disabled = !details.configured;
+    const removeButton = document.querySelector(`[data-remove-provider="${name}"]`);
+    if (removeButton) removeButton.disabled = running || !details.configured;
+  }
+  document.querySelectorAll('[data-save-provider]').forEach((button) => {
+    button.disabled = running;
+  });
+  const activeProvider = config.providers[engineEl.value];
+  // Move an untouched, unconfigured default to the first configured engine
+  // in preference order; never a choice the user made, never mid-session.
+  // Otherwise Start answers with the server's missing-key message.
+  if (!engineUserChosen && !running && activeProvider && !activeProvider.configured) {
+    const preferred = ['elevenlabs', 'assemblyai'].find(
+      (name) => config.providers[name] && config.providers[name].configured);
+    if (preferred) engineEl.value = preferred;
+  }
+}
+
+async function refreshProviderConfig() {
+  const response = await fetch('/api/providers', { cache: 'no-store' });
+  if (!response.ok) throw new Error(`configuration service returned ${response.status}`);
+  renderProviderConfig(await response.json());
+}
+
+async function updateProviderConfig(provider, remove = false) {
+  const input = document.getElementById(`${provider}-key`);
+  if (running) {
+    providerConfigStatus.textContent = 'Stop transcription before changing provider configuration.';
+    return;
+  }
+  const key = input.value.trim();
+  if (!remove && !key) {
+    providerConfigStatus.textContent = 'Enter a key before saving.';
+    input.focus();
+    return;
+  }
+  providerConfigStatus.textContent = remove ? 'Removing key…' : 'Saving key…';
+  try {
+    const response = await fetch('/api/providers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Dotify-Token': providerConfigToken },
+      body: JSON.stringify({ provider, key, remove }),
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || `configuration failed (${response.status})`);
+    input.value = '';
+    renderProviderConfig(body);
+    providerConfigStatus.textContent = remove
+      ? `${PROVIDER_LABELS[provider] || provider} key removed.`
+      : `${PROVIDER_LABELS[provider] || provider} is configured and ready.`;
+  } catch (error) {
+    providerConfigStatus.textContent = `Could not update provider: ${error.message}`;
+  }
+}
+
+document.querySelectorAll('[data-save-provider]').forEach((button) => {
+  button.addEventListener('click', () => updateProviderConfig(button.dataset.saveProvider));
+});
+document.querySelectorAll('[data-remove-provider]').forEach((button) => {
+  button.addEventListener('click', () => updateProviderConfig(button.dataset.removeProvider, true));
+});
+refreshProviderConfig().catch((error) => {
+  providerConfigStatus.textContent = `Could not load provider configuration: ${error.message}`;
+});
+
+// --- Personal dictionary ------------------------------------------------------
+// Boosting applies at the next session start, correction immediately. Writes
+// use the settings token, which has loaded by the time anyone can click.
+const dictionaryList = document.getElementById('dictionary-list');
+const dictionaryStatus = document.getElementById('dictionary-status');
+const dictionaryWordEl = document.getElementById('dictionary-word');
+const dictionarySoundsEl = document.getElementById('dictionary-sounds-like');
+
+async function postDictionary(payload) {
+  const response = await fetch('/api/dictionary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Dotify-Token': providerConfigToken },
+    body: JSON.stringify(payload),
+  });
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.error || `dictionary request failed (${response.status})`);
+  return body;
+}
+
+function renderDictionary(words) {
+  dictionaryList.textContent = '';
+  for (const entry of words) {
+    const li = document.createElement('li');
+    li.append((entry.soundsLike && entry.soundsLike.length
+      ? `${entry.word} (always replaces: ${entry.soundsLike.join(', ')})`
+      : entry.word) + ' ');
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = `Remove ${entry.word}`;
+    remove.addEventListener('click', async () => {
+      try {
+        renderDictionary((await postDictionary({ remove: entry.word })).words);
+        dictionaryStatus.textContent = `Removed ${entry.word}.`;
+      } catch (error) { dictionaryStatus.textContent = error.message; }
+    });
+    li.append(remove);
+    dictionaryList.append(li);
+  }
+  if (!words.length) {
+    const li = document.createElement('li');
+    li.textContent = 'No words yet.';
+    dictionaryList.append(li);
+  }
+}
+
+document.getElementById('dictionary-add').addEventListener('click', async () => {
+  const word = dictionaryWordEl.value.trim();
+  if (!word) {
+    dictionaryStatus.textContent = 'Enter a word before adding.';
+    dictionaryWordEl.focus();
+    return;
+  }
+  const soundsLike = dictionarySoundsEl.value.split(',')
+    .map((alias) => alias.trim()).filter(Boolean);
+  try {
+    const body = await postDictionary({ add: { word, soundsLike } });
+    renderDictionary(body.words);
+    dictionaryWordEl.value = '';
+    dictionarySoundsEl.value = '';
+    // The server's warning about ordinary-English aliases rides the status
+    // line, so screen readers announce it.
+    dictionaryStatus.textContent = (running
+      ? `Added ${word}. Mis-hearing fixes apply now; the model learns it when transcription next starts.`
+      : `Added ${word}.`) + (body.warning ? ` Caution: ${body.warning}` : '');
+    dictionaryWordEl.focus();
+  } catch (error) { dictionaryStatus.textContent = error.message; }
+});
+
+fetch('/api/dictionary', { cache: 'no-store' })
+  .then((response) => response.json())
+  .then((body) => renderDictionary(body.words || []))
+  .catch(() => { dictionaryStatus.textContent = 'Could not load the personal dictionary.'; });
+
+function setStatus(text) { statusEl.textContent = text; }
+
+function setButton(label) { toggleBtn.textContent = label; }
+
+// Unexpected end of a running session (provider or server death, a reported
+// error; never a user stop). Platform shells hook window.dotifySessionLost to
+// recover: the Windows overlay falls back to its offline engine.
+function sessionLost(reason, message) {
+  if (!window.dotifySessionLost) return;
+  try {
+    window.dotifySessionLost({ engine: engineEl.value, reason, message });
+  } catch (err) {
+    console.error('dotifySessionLost handler failed:', err);
+  }
+}
+
+// Losing the last network interface fires 'offline' at once, seconds before
+// the server's ping watchdog would notice; a running session cannot survive
+// it. (A cut further upstream keeps navigator.onLine true and is left to the
+// watchdog.)
+window.addEventListener('offline', () => {
+  if (!running) return;
+  setStatus('The internet connection was lost.');
+  stop(false);
+  sessionLost('offline');
+});
+
+// Linear-interpolation downsampler to 24 kHz Int16. One instance per capture
+// stream: the fractional read position and the previous chunk's last sample
+// carry across chunks, or non-integer ratios (44.1 kHz) would lose the tail
+// of every 128-sample quantum.
+function makeResampler(inputRate) {
+  if (inputRate === TARGET_RATE) {
+    return (float32) => {
+      const out = new Int16Array(float32.length);
+      for (let i = 0; i < float32.length; i++) {
+        const s = Math.max(-1, Math.min(1, float32[i]));
+        out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      }
+      return out;
+    };
+  }
+  const step = inputRate / TARGET_RATE;
+  let pos = 0;  // fractional read position, relative to the current chunk
+  let prev = 0; // last sample of the previous chunk (read when pos is in [-1, 0))
+  return (float32) => {
+    const len = float32.length;
+    const count = Math.max(0, Math.ceil((len - 1 - pos) / step));
+    const out = new Int16Array(count);
+    let n = 0;
+    while (pos < len - 1) {
+      const i0 = Math.floor(pos);
+      const frac = pos - i0;
+      const s0 = i0 < 0 ? prev : float32[i0];
+      const s1 = float32[i0 + 1];
+      const v = s0 + (s1 - s0) * frac;
+      const s = Math.max(-1, Math.min(1, v));
+      out[n++] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      pos += step;
+    }
+    pos -= len;
+    prev = float32[len - 1];
+    return n === count ? out : out.subarray(0, n);
+  };
+}
+
+// The capture pipeline shared by transcription and voice enrollment:
+// mic source -> worklet -> 24 kHz PCM16 chunks for onPcm, feeding the level
+// meter on the way. isLive (optional) gates both.
+async function createCaptureContext() {
+  const ctx = new AudioContext();
+  await ctx.audioWorklet.addModule('audio-worklet.js');
+  return ctx;
+}
+
+function connectCapture(ctx, source, onPcm, isLive = () => true) {
+  const node = new AudioWorkletNode(ctx, 'capture-processor');
+  const resample = makeResampler(ctx.sampleRate);
+  node.port.onmessage = (e) => {
+    if (!isLive()) return;
+    updateMicLevel(e.data);
+    onPcm(resample(e.data));
+  };
+  source.connect(node);
+  return node;
+}
+
+function renderPartials() {
+  partialEl.textContent = Array.from(partials.values()).join(' ');
+}
+
+// --- Microphone selection -----------------------------------------------------
+// Prefer an attached external mic (usb, then bluetooth, then the OS default,
+// judged by label) and say which mic is live. A mid-session attach or detach
+// swaps the capture and announces it.
+let micSource = null;    // current MediaStreamSource, kept for live swaps
+let micLabel = '';       // the published noun; '' = no capture running
+let micDeviceId = '';    // the pinned deviceId; '' = OS default
+
+// Pure picker (exposed for tests). Chrome's synthetic "default" and
+// "communications" entries duplicate a real device and are skipped. Labels
+// are empty until mic permission is granted; callers re-pick after opening.
+function pickMic(devices) {
+  const inputs = devices.filter((d) => d.kind === 'audioinput'
+    && d.deviceId && d.deviceId !== 'default' && d.deviceId !== 'communications');
+  const usb = inputs.find((d) => /usb/i.test(d.label));
+  if (usb) return { device: usb, label: 'usb mic' };
+  const bt = inputs.find((d) => /bluetooth|hands.?free/i.test(d.label));
+  if (bt) return { device: bt, label: 'bluetooth mic' };
+  return null;
+}
+window.dotifyPickMic = pickMic;
+
+async function preferredMic() {
+  try {
+    return pickMic(await navigator.mediaDevices.enumerateDevices());
+  } catch { return null; }
+}
+
+function captureConstraints(deviceId) {
+  // Measured on the AMI meeting benchmark: noise suppression and echo
+  // cancellation are a wash, automatic gain is worth 2-2.5 WER on quiet
+  // mics, so it is pinned explicitly.
+  const audio = { channelCount: 1, echoCancellation: true,
+    noiseSuppression: true, autoGainControl: true };
+  if (deviceId) audio.deviceId = { exact: deviceId };
+  return { audio };
+}
+
+function publishMic(pick, announce) {
+  const label = pick ? pick.label : (mediaStream ? 'default mic' : '');
+  micDeviceId = pick ? pick.device.deviceId : '';
+  // announce forces past the dedupe: a same-label swap is still a change.
+  if (label === micLabel && !announce) return;
+  micLabel = label;
+  // Windows overlay hook: shows the mic on the braille display.
+  if (window.dotifyMicSource) window.dotifyMicSource(label, announce);
+  if (announce && label) setStatus('Microphone: ' + label + '.');
+}
+
+// The track ending is the surest detach signal: devicechange never says
+// which device went. (Before the worklet exists, ws.onopen re-checks.)
+function watchMicTrack(stream) {
+  const track = stream.getAudioTracks()[0];
+  if (!track) return;
+  track.onended = () => {
+    if (stream !== mediaStream || !workletNode) return;
+    preferredMic().then((pick) => {
+      if (stream === mediaStream) swapMic(pick, true);
+    });
+  };
+}
+
+// Live capture swap: open the new device before dropping the old one, so a
+// failed swap leaves the session capturing. Overlapping swaps are serialized
+// by token, and the context check discards a swap that resolves into a new
+// session.
+let micSwapToken = 0;
+async function swapMic(pick, announce) {
+  const token = ++micSwapToken;
+  const ctx = audioContext;
+  try {
+    const next = await navigator.mediaDevices.getUserMedia(
+      captureConstraints(pick && pick.device.deviceId));
+    if (token !== micSwapToken || !workletNode
+        || !audioContext || audioContext !== ctx) {
+      next.getTracks().forEach((t) => t.stop());  // superseded or stopped
+      return;
+    }
+    const old = mediaStream;
+    mediaStream = next;
+    if (micSource) micSource.disconnect();
+    micSource = audioContext.createMediaStreamSource(next);
+    micSource.connect(workletNode);
+    if (old) old.getTracks().forEach((t) => t.stop());
+    watchMicTrack(next);
+    publishMic(pick, announce);
+  } catch (err) {
+    if (token !== micSwapToken) return;   // superseded: not our news
+    setStatus('Microphone switch failed: ' + err.message);
+    // The device being left may be dead (often why the swap ran): fall back
+    // to the OS default. A null pick cannot recurse further.
+    if (pick && mediaStream
+        && mediaStream.getAudioTracks()[0]?.readyState === 'ended') {
+      swapMic(null, true);
+    }
+  }
+}
+
+// A mid-session attach or detach re-picks; an idle page picks at Start.
+navigator.mediaDevices.addEventListener('devicechange', async () => {
+  if (!mediaStream) return;
+  const pick = await preferredMic();
+  if ((pick ? pick.device.deviceId : '') === micDeviceId) return;
+  await swapMic(pick, true);
+});
+
+async function start() {
+  setStatus('Connecting…');
+  toggleBtn.disabled = true;
+  try {
+    // A preferred mic that will not open (unplugged, held by another app)
+    // falls back to the OS default. A permission error recurs there, so the
+    // NotAllowedError guidance below stays accurate.
+    let startPick = await preferredMic();
+    let failedPinId = '';
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia(
+        captureConstraints(startPick && startPick.device.deviceId));
+    } catch (err) {
+      if (!startPick) throw err;
+      failedPinId = startPick.device.deviceId;
+      startPick = null;
+      mediaStream = await navigator.mediaDevices.getUserMedia(
+        captureConstraints(null));
+    }
+    watchMicTrack(mediaStream);
+    audioContext = await createCaptureContext();
+
+    // Conversation mode (speaker labels; the server honors it for AssemblyAI
+    // only).
+    const audioParams = new URLSearchParams({ provider: engineEl.value });
+    if (conversationEl.checked) {
+      audioParams.set('conversation', '1');
+      const maxSpeakers = parseInt(maxSpeakersEl.value, 10);
+      if (maxSpeakers >= 1 && maxSpeakers <= 10) audioParams.set('max_speakers', String(maxSpeakers));
+    }
+    recordingNote = '';
+    if (recordEl.checked) audioParams.set('record', '1');
+    audioParams.set('latency', latencyMode());
+    // The server replays finals this page missed (say, flushed after a
+    // pause closed the socket).
+    audioParams.set('last_seq', String(lastFinalSeq));
+    ws = new WebSocket(`ws://${location.host}/audio?${audioParams}`);
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = () => {
+      micSource = audioContext.createMediaStreamSource(mediaStream);
+      // Batch ~100 ms of audio per WebSocket frame.
+      let queue = [];
+      let queued = 0;
+      workletNode = connectCapture(audioContext, micSource, (pcm) => {
+        queue.push(pcm);
+        queued += pcm.length;
+        if (queued >= TARGET_RATE / 10) {
+          const merged = new Int16Array(queued);
+          let off = 0;
+          for (const chunk of queue) { merged.set(chunk, off); off += chunk.length; }
+          ws.send(merged.buffer);
+          queue = [];
+          queued = 0;
+        }
+      }, () => running && ws.readyState === WebSocket.OPEN);
+      publishMic(startPick, false);
+      // Re-check the pick now that capture is wired: first-run labels were
+      // blank until permission landed, devicechange events during connect
+      // had no worklet to swap onto, and the mic may already have died.
+      // Announced only when correcting a dead track; a pin that failed to
+      // open this start is not retried.
+      preferredMic().then((pick) => {
+        if (!mediaStream || !workletNode) return;
+        const id = pick ? pick.device.deviceId : '';
+        const track = mediaStream.getAudioTracks()[0];
+        const dead = track && track.readyState === 'ended';
+        if ((id !== micDeviceId && id !== failedPinId) || dead) {
+          swapMic(pick, dead);
+        }
+      });
+      running = true;
+      toggleBtn.disabled = false;
+      engineEl.disabled = true;
+      setButton('Stop transcription');
+      // Not "speak now" until the server's 'ready': the provider's own
+      // connection is still opening.
+      setStatus('Connecting to the transcription service…');
+    };
+
+    ws.onmessage = (e) => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      if (msg.type === 'ready') {
+        sessionLive = true;
+        setStatus('Transcribing. Speak now.' + recordingNote);
+      } else if (msg.type === 'recording') {
+        if (sessionLive) setStatus(`Recording to ${msg.file}.`);
+        else recordingNote = ` Recording this session to ${msg.file}.`;
+      } else if (msg.type === 'recording-stopped') {
+        setStatus(`Recording stopped — saved to ${msg.file}.`);
+      } else if (msg.type === 'recording-failed') {
+        if (sessionLive) {
+          setStatus('Recording could NOT start — nothing is being saved.');
+        } else {
+          recordingNote = ' Recording could NOT start — nothing is being saved.';
+        }
+      } else if (msg.type === 'partial') {
+        // The full hypothesis for its segment; empty means finalized to nothing.
+        if (msg.text) partials.set(msg.item_id, msg.text);
+        else partials.delete(msg.item_id);
+        renderPartials();
+      } else if (msg.type === 'final') {
+        partials.delete(msg.item_id);
+        renderPartials();
+        if (msg.seq) lastFinalSeq = msg.seq;
+        // Empty text: the server dropped this final (hallucination guard).
+        if (msg.text) appendFinal(msg.text);
+      } else if (msg.type === 'error') {
+        setStatus('Error: ' + msg.message);
+        stop(false);
+        sessionLost('error', msg.message);
+      } else if (msg.type === 'closed' && running) {
+        setStatus('Connection closed.');
+        stop(false);
+        sessionLost('closed');
+      }
+    };
+
+    ws.onerror = () => {
+      const wasRunning = running;
+      setStatus('Connection error.');
+      stop(false);
+      // Only a running session's death counts (which also dedupes the
+      // error/close pair). Failing before open means the local server is
+      // down, and no fallback could work either.
+      if (wasRunning) sessionLost('socket-error');
+    };
+
+    ws.onclose = () => {
+      // The server can die without a 'closed' message or an error event.
+      if (running) {
+        setStatus('Connection to the transcription server was lost.');
+        stop(false);
+        sessionLost('socket-close');
+      }
+    };
+  } catch (err) {
+    if (err.name === 'NotAllowedError') {
+      setStatus('Microphone permission was dismissed or blocked. In Chrome, press F6 until you reach the permission prompt and choose Allow, or open Site settings from the address bar, set Microphone to Allow, reload the page, and press Start again.');
+    } else {
+      setStatus('Could not start: ' + err.message);
+    }
+    toggleBtn.disabled = false;
+    stop(false);
+  }
+}
+
+function stop(announce = true) {
+  running = false;
+  sessionLive = false;
+  micSwapToken += 1;  // any in-flight swap is now stale: discard on resolve
+  if (workletNode) { workletNode.disconnect(); workletNode = null; }
+  micSource = null;   // its context is closing; a late swap must not reuse it
+  if (mediaStream) { mediaStream.getTracks().forEach((t) => t.stop()); mediaStream = null; }
+  publishMic(null, false);   // no capture -> no mic item on the display
+  if (audioContext) { audioContext.close(); audioContext = null; }
+  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) ws.close();
+  ws = null;
+  partials.clear();
+  renderPartials();
+  micLevelEl.value = 0;
+  micLevelEl.textContent = '0';
+  toggleBtn.disabled = false;
+  engineEl.disabled = false;
+  document.getElementById('diarization-options').disabled = false;
+  setButton('Start transcription');
+  if (announce) setStatus('Stopped.');
+}
+
+toggleBtn.addEventListener('click', () => {
+  if (running) { stop(); return; }
+  engineEl.disabled = true;               // lock engine while running
+  document.getElementById('diarization-options').disabled = true;
+  start();
+});
+
+// --- Pause/resume transcription ----------------------------------------------
+// Pausing releases the microphone and closes the provider session, so nothing
+// is captured or billed until resume. It drives the Start/Stop toggle rather
+// than engine internals: the toggle's label and click() are the contract
+// every engine honors, including the Windows overlay's offline engine.
+// window.dotifyPause lets platform shells pause automatically (the Windows
+// app does while the user types to the display); a manual pause is sticky
+// and never auto-resumed.
+const pauseBtn = document.getElementById('pause-toggle');
+const transcribing = () => toggleBtn.textContent.trim().startsWith('Stop');
+let pauseState = 'off';    // 'off' | 'manual' | 'auto'
+let pauseRestart = false;  // pause stopped a running session; resume restarts
+
+function renderPause() {
+  pauseBtn.textContent =
+    pauseState === 'off' ? 'Pause microphone' : 'Resume microphone';
+  pauseBtn.disabled = Boolean(document.documentElement.dataset.dotifyStopped)
+    || (pauseState === 'off' && (!transcribing() || toggleBtn.disabled));
+}
+
+function pauseTranscription({ auto = false } = {}) {
+  if (pauseState !== 'off') return;
+  if (auto && !transcribing()) return; // nothing running: auto has no work
+  pauseState = auto ? 'auto' : 'manual';
+  pauseRestart = transcribing();
+  if (pauseRestart) toggleBtn.click();
+  renderPause();
+  setStatus(auto
+    ? 'Transcription is paused while you type: the microphone is off and no '
+      + 'speech service is billed. It resumes when you leave the typing field.'
+    : 'Transcription is paused: the microphone is off and no speech service '
+      + 'is billed. Press Resume microphone to continue.');
+}
+
+function resumeTranscription({ auto = false } = {}) {
+  if (pauseState === 'off') return;
+  if (auto && pauseState !== 'auto') return; // a manual pause is sticky
+  const restart = pauseRestart;
+  pauseState = 'off';
+  pauseRestart = false;
+  renderPause();
+  if (restart && !transcribing() && !toggleBtn.disabled) toggleBtn.click();
+}
+
+pauseBtn.addEventListener('click', () => {
+  if (document.documentElement.dataset.dotifyStopped) return;
+  if (pauseState === 'off') pauseTranscription();
+  else resumeTranscription();
+});
+
+// Follow the toggle: keep the pause button in step, and end the pause if
+// transcription starts by other means. (Resume sets pauseState to 'off'
+// before it clicks the toggle.)
+new MutationObserver(() => {
+  if (pauseState !== 'off' && transcribing()) {
+    pauseState = 'off';
+    pauseRestart = false;
+  }
+  renderPause();
+}).observe(toggleBtn, {
+  childList: true, characterData: true, subtree: true,
+  attributes: true, attributeFilter: ['disabled'],
+});
+renderPause();
+
+window.dotifyPause = {
+  pause: pauseTranscription,
+  resume: resumeTranscription,
+  state: () => pauseState,
+};
+
+// --- Named speakers -------------------------------------------------------------
+// Enrollment records ~20 s of one person through the transcription capture
+// pipeline and hands the clip to the local speaker-id service via the
+// server. Identification during sessions is automatic.
+const speakersListEl = document.getElementById('speakers-list');
+const speakersStatusEl = document.getElementById('speakers-status');
+const enrollNameEl = document.getElementById('enroll-name');
+const enrollButton = document.getElementById('enroll-button');
+const ENROLL_SECONDS = 20;
+let speakerServiceUp = false;
+let enrolling = false;
+
+async function refreshSpeakers() {
+  let info = { ok: false, speakers: [] };
+  try {
+    const response = await fetch('/api/speakers', { cache: 'no-store' });
+    info = await response.json();
+  } catch { /* server unreachable: render as unavailable */ }
+  speakerServiceUp = Boolean(info.ok);
+  speakersListEl.innerHTML = '';
+  for (const speaker of info.speakers || []) {
+    const item = document.createElement('li');
+    item.textContent = `${speaker.name} `;
+    const forget = document.createElement('button');
+    forget.type = 'button';
+    forget.textContent = `Forget ${speaker.name}`;
+    forget.addEventListener('click', async () => {
+      let ok = false;
+      try {
+        const response = await fetch(`/api/speakers/${encodeURIComponent(speaker.name)}`,
+          { method: 'DELETE' });
+        ok = response.ok;
+      } catch { /* server unreachable */ }
+      speakersStatusEl.textContent = ok
+        ? `${speaker.name} forgotten.`
+        : `Could not forget ${speaker.name}. Try again.`;
+      refreshSpeakers();
+    });
+    item.appendChild(forget);
+    speakersListEl.appendChild(item);
+  }
+  enrollButton.disabled = !speakerServiceUp || enrolling;
+  if (!speakerServiceUp) {
+    speakersStatusEl.textContent =
+      'Speaker naming is off: the local speaker service is not running. ' +
+      'Transcription still works with A:/B: labels.';
+  }
+}
+
+async function enrollVoice() {
+  const name = enrollNameEl.value.trim();
+  if (!name) {
+    speakersStatusEl.textContent = "Enter the person's name first.";
+    enrollNameEl.focus();
+    return;
+  }
+  if (running) {
+    speakersStatusEl.textContent = 'Stop transcription before enrolling a voice.';
+    return;
+  }
+  enrolling = true;
+  enrollButton.disabled = true;
+  let stream = null;
+  let ctx = null;
+  let node = null;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
+    });
+    ctx = await createCaptureContext();
+    const chunks = [];
+    let collected = 0;
+    const target = TARGET_RATE * ENROLL_SECONDS;
+    speakersStatusEl.textContent =
+      `Recording ${name} for ${ENROLL_SECONDS} seconds — have them speak continuously, close to the microphone.`;
+    let lastAnnounced = ENROLL_SECONDS;
+    await new Promise((resolve) => {
+      node = connectCapture(ctx, ctx.createMediaStreamSource(stream), (pcm) => {
+        chunks.push(pcm);
+        collected += pcm.length;
+        const left = Math.ceil((target - collected) / TARGET_RATE);
+        if (left < lastAnnounced && left > 0 && left % 5 === 0) {
+          lastAnnounced = left;
+          speakersStatusEl.textContent = `Recording… about ${left} seconds left.`;
+        }
+        if (collected >= target) resolve();
+      });
+    });
+    node.disconnect();
+    const merged = new Int16Array(collected);
+    let offset = 0;
+    for (const chunk of chunks) { merged.set(chunk, offset); offset += chunk.length; }
+    speakersStatusEl.textContent = 'Processing enrollment…';
+    const response = await fetch(`/api/speakers/${encodeURIComponent(name)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: merged.buffer,
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || `enrollment failed (${response.status})`);
+    speakersStatusEl.textContent =
+      `${result.name} is enrolled (${result.seconds} seconds of clear speech captured).`;
+    enrollNameEl.value = '';
+    await refreshSpeakers();
+  } catch (err) {
+    speakersStatusEl.textContent = err.name === 'NotAllowedError'
+      ? 'Microphone permission was dismissed or blocked — allow it and try again.'
+      : `Enrollment failed: ${err.message}`;
+  } finally {
+    enrolling = false;
+    if (node) { try { node.disconnect(); } catch {} }
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    if (ctx) ctx.close().catch(() => {});
+    micLevelEl.value = 0;
+    micLevelEl.textContent = '0';
+    enrollButton.disabled = !speakerServiceUp;
+  }
+}
+enrollButton.addEventListener('click', enrollVoice);
+refreshSpeakers();
+
+// Fresh start on every load, including a restore from the back/forward
+// cache: clear the page and the server's transcript file.
+function freshStart() {
+  clearFinal();
+  partialEl.textContent = '';
+  partials.clear();
+  micLevelEl.value = 0;
+  micLevelEl.textContent = '0';
+  setStatus('Idle.');
+  fetch('/reset', { method: 'POST' }).catch(() => {});
+}
+window.addEventListener('pageshow', freshStart);
+</script>
+</body>
+</html>

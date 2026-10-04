@@ -1,0 +1,21 @@
+# Secrets — never commit the API key
+.env
+
+# Dependencies
+node_modules/
+
+# Per-session scratch output
+transcript.txt
+
+# Editor/OS cruft
+.DS_Store
+Thumbs.db
+server.log
+
+# Personal dictionary (user's local word list - stays local like the .env)
+dictionary.json
+
+# Session recordings (raw room audio, see recorder.js) and the downloaded
+# offline model: both default to folders beside the .env
+recordings/
+models/

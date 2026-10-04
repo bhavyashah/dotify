@@ -1,0 +1,6 @@
+# Data files parsed line-by-line at runtime keep LF regardless of platform
+# autocrlf settings (the dictionary guard reads common-words.txt).
+core/speech-to-text/common-words.txt text eol=lf
+
+# Shell scripts run under Linux/WSL; a CRLF shebang breaks them.
+*.sh text eol=lf
