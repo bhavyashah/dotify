@@ -35,8 +35,14 @@ in braille:
   display, and you can type a reply on the display's keys for Dotify to
   speak aloud.
 - **Personal dictionary** for names and words the speech model mishears.
-- **Choice of speech models,** including NVIDIA Nemotron, which runs
-  offline on your Windows computer.
+- **Choice of speech models:** NVIDIA Nemotron, which runs offline on your
+  Windows computer, and cloud models from ElevenLabs, AssemblyAI, Deepgram,
+  and OpenAI, using your own API key.
+
+We hope these features find their way into mobile platforms and screen
+readers, so braille readers can use them on the devices they already carry.
+Dotify's code is open under the Apache 2.0 license for anyone building
+toward that.
 
 ## Try it on Windows
 
