@@ -224,7 +224,7 @@ signed installer.
 | Access denied | Close NVDA, JAWS, BRLTTY, or any other program using the display. |
 | More than one display found | Start with `-Display <profile-id>`. |
 | Braille falls back to grade 1 | Reinstall: the bundled `vendor\liblouis` is missing or damaged. |
-| Microphone meter stays at zero | Allow microphone access for `localhost` and check the Windows input device. Capture errors appear in the status line. |
+| Microphone meter stays at zero | Allow microphone access for `127.0.0.1` and check the Windows input device. Capture errors appear in the status line. |
 | Nemotron says "not downloaded" | **Settings › Transcription › Offline model › Download**. An interrupted download resumes. |
 | Offline speech did not start | See `%LOCALAPPDATA%\Dotify\logs\speech-error.log`. Cloud models with keys still work. |
 | "A leftover Dotify session probably still holds port …" | Another Dotify is running: close its window, or quit it, and launch again. |
