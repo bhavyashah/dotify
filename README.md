@@ -1,4 +1,4 @@
-# Dotify: live speech on a braille display
+# Dotify: live captions in braille
 
 Dotify is a communication aid for deafblind people who read braille. It
 transcribes speech in the room and streams the words to a refreshable
