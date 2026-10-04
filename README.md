@@ -1,16 +1,22 @@
 # Dotify: live speech on a braille display
 
-Dotify is built for deafblind people who read braille. It transcribes speech
-in the room and streams the words to a refreshable braille display. The
-reader sets the pace and uses the display's own keys to slow down,
-pause, pan back, jump to the most recent speech, or get a short summary of
-what they missed.
+Dotify is a communication aid for deafblind people who read braille. It
+transcribes speech in the room and streams the words to a refreshable
+braille display. The reader sets the pace and uses the display's own keys
+to slow down, pause, pan back, jump to the most recent speech, or get a
+short summary of what they missed.
 
 Dotify runs on Windows 11 and Linux and works with a wide range of USB and
 Bluetooth braille displays, including the HumanWare Brailliant, BrailleNote
 Touch, and NLS eReader, the APH Mantis Q40 and Chameleon 20, the HIMS Braille
 Edge and BrailleSense, and displays that follow the USB HID braille
 standard. On Linux, Dotify supports every display BRLTTY supports.
+
+> **Dotify is not a replacement for professional human captioning (CART) or
+> interpreting.** Speech recognition makes mistakes, especially with names,
+> accents, crosstalk, and background noise. For medical, legal, educational,
+> and other important conversations, use a professional captioner or
+> interpreter.
 
 ## What Dotify adds to live captions
 
