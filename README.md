@@ -116,12 +116,12 @@ covers what we learned building Dotify.
 ## Acknowledgements
 
 Dotify would not exist without the people who shared their time, their lived
-expertise, and their candid feedback. Thank you to David Madey, Haben Girma,
-Gordon Byrnes, Lucy Greco, Victor Tsaran, Christopher Kchao, Scott Davert,
-Mark Baxter, Robert Stigile, Maurice Mines, and Ania Filochowska. They tried
-early versions, told me what worked and what didn't, and taught me what
-DeafBlind people actually need from live captions in braille. I'm grateful
-for their generosity.
+expertise, and their candid feedback with me. Thank you to David Madey,
+Haben Girma, Gordon Byrnes, Lucy Greco, Victor Tsaran, Christopher Kchao,
+Scott Davert, Mark Baxter, Robert Stigile, Maurice Mines, and Ania
+Filochowska. They tried early versions, told me what worked and what didn't,
+and taught me what DeafBlind people actually need from live captions in
+braille. I'm grateful for their generosity.
 
 ## License
 
