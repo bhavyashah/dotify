@@ -1,6 +1,6 @@
 # Dotify: live captions in braille
 
-Dotify is a communication aid for deafblind people who read braille. It
+Dotify is a communication aid for Deafblind people who read braille. It
 transcribes speech in the room and streams the words to a refreshable
 braille display. The reader sets the pace and uses the display's own keys
 to slow down, pause, pan back, jump to the most recent speech, or get a
@@ -122,7 +122,7 @@ expertise, and their candid feedback with me. Thank you to David Madey,
 Haben Girma, Gordon Byrnes, Lucy Greco, Victor Tsaran, Christopher Kchao,
 Scott Davert, Mark Baxter, Robert Stigile, Maurice Mines, and Ania
 Filochowska. They tried early versions, told me what worked and what didn't,
-and taught me what DeafBlind people actually need from live captions in
+and taught me what Deafblind people actually need from live captions in
 braille. I'm grateful for their generosity.
 
 ## License
