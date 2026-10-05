@@ -149,6 +149,9 @@ hears speech.
 Dotify opens in its own window in Microsoft Edge (or Chrome if Edge isn't
 available). From top to bottom:
 
+<img src="../../docs/screenshots/dotify-window.png" width="600" alt="The Dotify window during a session. From the top: the Pause microphone button, the status line Transcribing offline on this computer, the line Connected to APH Mantis Q40, the Catch up and Summarize buttons, the microphone level meter, the transcript with the words on the braille display highlighted and the words still waiting below them, and the Type instead of speaking box.">
+
+
 - **Pause microphone** button and a status line.
 - **Braille** panel: the display's connection status and the **Catch up**
   and **Summarize** buttons. If no display is connected, the panel says what
@@ -265,6 +268,10 @@ A full page is always left-aligned and never splits a word, unless the word
 is wider than the whole display.
 
 ## 9. Speed and grade
+
+The speed and grade buttons are under **Settings › Braille**:
+
+<img src="../../docs/screenshots/braille-settings.png" width="500" alt="Braille settings: Slower and Faster buttons; Switch grade, Change reading mode, and Pause braille buttons; a readout of grade 2, auto reading mode, about 104 words per minute, and the Nemotron model; and the Cells per refresh, Space time, Punctuation time, and Lowercase braille settings.">
 
 **Speed.** Use **Slower** and **Faster** (`Alt+Shift+S` / `Alt+Shift+F`, or
 Space + dot 1 / Space + dot 4).
@@ -541,6 +548,9 @@ label, so a brief mix-up doesn't reach the display.
 ## 22. Following along on screen
 
 The Dotify window shows a sighted partner where you are in the text:
+
+<img src="../../docs/screenshots/transcript-bands.png" width="600" alt="The transcript area. Lines already read are in a box. Below it, a highlighted band shows the words on the braille display, and below that the words still waiting appear in gray.">
+
 
 - **Transcript:** what you have already read.
 - **On the braille display** (highlighted): the words under your fingers right

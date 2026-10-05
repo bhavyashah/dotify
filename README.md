@@ -6,6 +6,8 @@ braille display. The reader sets the pace and uses the display's own keys
 to slow down, pause, pan back, jump to the most recent speech, or get a
 short summary of what they missed.
 
+<img src="docs/screenshots/dotify-window.png" width="600" alt="The Dotify window during a session. From the top: the Pause microphone button, the status line Transcribing offline on this computer, the line Connected to APH Mantis Q40, the Catch up and Summarize buttons, the microphone level meter, the transcript with the words on the braille display highlighted and the words still waiting below them, and the Type instead of speaking box.">
+
 Dotify runs on Windows 11 and Linux and works with a wide range of USB and
 Bluetooth braille displays, including the HumanWare Brailliant, BrailleNote
 Touch, and NLS eReader, the APH Mantis Q40 and Chameleon 20, the HIMS Braille
